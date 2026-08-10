@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useEffect } from 'react'
+import { use, useState, useEffect, useRef } from 'react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
 import { StoryCard } from '@/components/story/StoryCard'
@@ -25,6 +25,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // File Input Refs for Device Uploads
+  const avatarFileRef = useRef<HTMLInputElement | null>(null)
+  const coverFileRef = useRef<HTMLInputElement | null>(null)
+
   // Editable Profile States
   const [bio, setBio] = useState('গল্প লিখতে ভালোবাসি। প্রকৃতির সৌন্দর্য আর মানুষের সম্পর্কের নানা টানাপোড়েন আমার লেখার মূল উৎস।')
   const [isEditingBio, setIsEditingBio] = useState(false)
@@ -33,10 +37,12 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false)
   const [avatarInputUrl, setAvatarInputUrl] = useState('')
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
 
   const [coverUrl, setCoverUrl] = useState<string | null>(null)
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false)
   const [coverInputUrl, setCoverInputUrl] = useState('')
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
 
   const [isSaving, setIsSaving] = useState(false)
 
@@ -61,7 +67,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     loadUserData()
   }, [username])
 
-  // Save profile updates to backend API & state
+  // Save profile updates to backend API
   const handleSaveProfileUpdate = async (updates: { bio?: string; avatarUrl?: string; coverUrl?: string }) => {
     setIsSaving(true)
     try {
@@ -77,6 +83,44 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     }
   }
 
+  // Device Avatar File Picker handler
+  const handleAvatarFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('ছবির আকার ১০ মেগাবাইটের কম হতে হবে।')
+        return
+      }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setAvatarPreview(reader.result)
+          setAvatarInputUrl(reader.result)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Device Cover File Picker handler
+  const handleCoverFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('ছবির আকার ১০ মেগাবাইটের কম হতে হবে।')
+        return
+      }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setCoverPreview(reader.result)
+          setCoverInputUrl(reader.result)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   // Handle Bio Save
   const handleSaveBio = () => {
     setBio(tempBio)
@@ -88,6 +132,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const handleSaveAvatar = (newUrl: string) => {
     setAvatarUrl(newUrl)
     setIsAvatarModalOpen(false)
+    setAvatarPreview(null)
     handleSaveProfileUpdate({ avatarUrl: newUrl })
   }
 
@@ -95,6 +140,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const handleSaveCover = (newUrl: string) => {
     setCoverUrl(newUrl)
     setIsCoverModalOpen(false)
+    setCoverPreview(null)
     handleSaveProfileUpdate({ coverUrl: newUrl })
   }
 
@@ -180,7 +226,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               type="button"
               onClick={() => setIsAvatarModalOpen(true)}
               className="absolute bottom-1 right-1 rounded-full bg-amber-600 hover:bg-amber-700 text-white p-2.5 shadow-lg ring-2 ring-white dark:ring-stone-900 transition-transform transform hover:scale-110"
-              title="প্রোফাইল ছবি যুক্ত বা পরিবর্তন করুন"
+              title="ডিভাইস থেকে ছবি আপলোড বা পরিবর্তন করুন"
             >
               📷
             </button>
@@ -395,12 +441,51 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               </button>
             </div>
 
+            {/* Device Cover Upload Area */}
+            <div
+              onClick={() => coverFileRef.current?.click()}
+              className="border-2 border-dashed border-stone-300 dark:border-stone-700 hover:border-amber-500 rounded-xl p-6 text-center cursor-pointer bg-stone-50 dark:bg-stone-950/50 transition-colors"
+            >
+              <input
+                ref={coverFileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCoverFileUpload}
+                className="hidden"
+              />
+              <span className="text-3xl block mb-2">📁</span>
+              <p className="text-sm font-bold text-amber-600 font-bengali">
+                আপনার ডিভাইস (মোবাইল / কম্পিউটার) থেকে ছবি সিলেক্ট করুন
+              </p>
+              <p className="text-xs text-stone-400 font-bengali mt-1">
+                PNG, JPG, WEBP সাপোর্ট করে (সর্বোচ্চ ১০ মেগাবাইট)
+              </p>
+            </div>
+
+            {coverPreview && (
+              <div className="relative h-24 rounded-xl overflow-hidden border border-amber-500">
+                <img src={coverPreview} alt="Cover Preview" className="h-full w-full object-cover" />
+                <span className="absolute bottom-1 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-bengali">
+                  ✓ ডিভাইসের ছবি সিলেক্টেড
+                </span>
+              </div>
+            )}
+
+            <div className="relative text-center my-2">
+              <span className="bg-white dark:bg-stone-900 px-3 text-xs text-stone-400 font-bengali">
+                অথবা কভার ছবির URL প্রবেশ করান
+              </span>
+            </div>
+
             <Input
               id="cover-url-input"
-              label="কভার ছবির URL দিন"
+              label="কভার ছবির URL"
               placeholder="https://example.com/banner.jpg"
               value={coverInputUrl}
-              onChange={(e) => setCoverInputUrl(e.target.value)}
+              onChange={(e) => {
+                setCoverInputUrl(e.target.value)
+                setCoverPreview(e.target.value)
+              }}
             />
 
             <div>
@@ -431,7 +516,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               <Button
                 variant="primary"
                 onClick={() => {
-                  if (coverInputUrl.trim()) handleSaveCover(coverInputUrl.trim())
+                  const targetUrl = coverPreview || coverInputUrl.trim()
+                  if (targetUrl) handleSaveCover(targetUrl)
                 }}
                 className="bg-amber-600 hover:bg-amber-700 text-white font-bengali"
               >
@@ -458,12 +544,55 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               </button>
             </div>
 
+            {/* Device Avatar File Upload Area */}
+            <div
+              onClick={() => avatarFileRef.current?.click()}
+              className="border-2 border-dashed border-amber-300 dark:border-amber-700 hover:border-amber-500 rounded-xl p-5 text-center cursor-pointer bg-amber-50/50 dark:bg-amber-950/20 transition-all hover:scale-[1.01]"
+            >
+              <input
+                ref={avatarFileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarFileUpload}
+                className="hidden"
+              />
+              <span className="text-3xl block mb-1">📸</span>
+              <p className="text-sm font-bold text-amber-700 dark:text-amber-400 font-bengali">
+                আপনার ডিভাইস (মোবাইল / কম্পিউটার) থেকে ছবি সিলেক্ট করুন
+              </p>
+              <p className="text-xs text-stone-400 font-bengali mt-1">
+                আপনার পছন্দের ছবি সিলেক্ট করতে ক্লিক করুন (PNG, JPG, WEBP)
+              </p>
+            </div>
+
+            {/* Avatar Live Preview */}
+            {avatarPreview && (
+              <div className="flex items-center justify-center gap-3 p-3 bg-stone-50 dark:bg-stone-950 rounded-xl border border-amber-400">
+                <div className="h-16 w-16 rounded-full overflow-hidden ring-2 ring-amber-500">
+                  <img src={avatarPreview} alt="Selected Avatar" className="h-full w-full object-cover" />
+                </div>
+                <div className="text-xs font-bengali text-stone-600 dark:text-stone-300">
+                  <p className="font-bold text-amber-600">✓ ডিভাইসের ছবি সিলেক্টেড</p>
+                  <p className="text-[11px] text-stone-400">সংরক্ষণ করুন বাটনে চাপুন</p>
+                </div>
+              </div>
+            )}
+
+            <div className="relative text-center my-2">
+              <span className="bg-white dark:bg-stone-900 px-3 text-xs text-stone-400 font-bengali">
+                অথবা প্রোফাইল ছবির URL দিন
+              </span>
+            </div>
+
             <Input
               id="avatar-url-input"
-              label="প্রোফাইল ছবির URL দিন"
+              label="প্রোফাইল ছবির URL"
               placeholder="https://example.com/avatar.jpg"
               value={avatarInputUrl}
-              onChange={(e) => setAvatarInputUrl(e.target.value)}
+              onChange={(e) => {
+                setAvatarInputUrl(e.target.value)
+                setAvatarPreview(e.target.value)
+              }}
             />
 
             <div>
@@ -496,7 +625,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               <Button
                 variant="primary"
                 onClick={() => {
-                  if (avatarInputUrl.trim()) handleSaveAvatar(avatarInputUrl.trim())
+                  const targetUrl = avatarPreview || avatarInputUrl.trim()
+                  if (targetUrl) handleSaveAvatar(targetUrl)
                 }}
                 className="bg-amber-600 hover:bg-amber-700 text-white font-bengali"
               >
