@@ -2,17 +2,16 @@
 
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { SITE_NAME } from '@/lib/constants'
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered')
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
@@ -27,18 +26,18 @@ function LoginForm() {
       const res = await signIn('credentials', {
         email: form.email,
         password: form.password,
+        callbackUrl,
         redirect: false,
       })
 
       if (res?.error) {
         setError('ইমেইল বা পাসওয়ার্ড সঠিক নয়।')
+        setIsLoading(false)
       } else {
-        router.push(callbackUrl)
-        router.refresh()
+        window.location.href = res?.url || callbackUrl
       }
     } catch {
       setError('একটি সমস্যা দেখা দিয়েছে। আবার চেষ্টা করুন।')
-    } finally {
       setIsLoading(false)
     }
   }

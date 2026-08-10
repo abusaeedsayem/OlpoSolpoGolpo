@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Protected author routes
@@ -10,8 +10,10 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/api/author')
 
   if (isAuthorRoute) {
-    // Check for NextAuth session token
+    // Check for NextAuth / Auth.js session tokens
     const sessionToken =
+      request.cookies.get('authjs.session-token') ||
+      request.cookies.get('__Secure-authjs.session-token') ||
       request.cookies.get('next-auth.session-token') ||
       request.cookies.get('__Secure-next-auth.session-token')
 
