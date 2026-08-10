@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum Role {
+  READER
+  AUTHOR
+  ADMIN
+}
+
+enum StoryStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ChapterStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum Language {
+  BENGALI
+  ENGLISH
+}
+
+// ============================================================
+// MODELS
+// ============================================================
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(READER)
+  bio          String?   @db.Text
+  avatarUrl    String?
+  username     String    @unique
+  isVerified   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  stories      Story[]
+  bookmarks    Bookmark[]
+  reviews      Review[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  iconEmoji   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  stories     Story[]
+
+  @@index([slug])
+}
+
+model Story {
+  id           String      @id @default(cuid())
+  title        String
+  slug         String      @unique
+  description  String      @db.Text
+  coverUrl     String?
+  status       StoryStatus @default(DRAFT)
+  language     Language    @default(BENGALI)
+  readCount    Int         @default(0)
+  isMature     Boolean     @default(false)
+  tags         String[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Foreign keys
+  authorId     String
+  categoryId   String
+
+  // Relations
+  author       User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category     Category    @relation(fields: [categoryId], references: [id])
+  chapters     Chapter[]
+  bookmarks    Bookmark[]
+  reviews      Review[]
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Chapter {
+  id            String        @id @default(cuid())
+  title         String
+  content       String        @db.Text
+  chapterNumber Int
+  status        ChapterStatus @default(DRAFT)
+  wordCount     Int           @default(0)
+  readCount     Int           @default(0)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Foreign keys
+  storyId       String
+
+  // Relations
+  story         Story         @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, chapterNumber])
+  @@index([storyId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Foreign keys
+  userId    String
+  storyId   String
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+  @@index([userId])
+  @@index([storyId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5
+  body      String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  userId    String
+  storyId   String
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+  @@index([storyId])
+}
