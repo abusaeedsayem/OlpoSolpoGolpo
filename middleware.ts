@@ -4,9 +4,10 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protected author routes
+  // Protected author routes (dashboard root & management)
+  // We allow /dashboard/stories/new to load so authors/writers can access writing workspace directly
   const isAuthorRoute =
-    pathname.startsWith('/dashboard') ||
+    (pathname === '/dashboard' || pathname.startsWith('/dashboard/stories/') && pathname !== '/dashboard/stories/new') ||
     pathname.startsWith('/api/author')
 
   if (isAuthorRoute) {
