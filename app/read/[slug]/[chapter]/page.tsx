@@ -25,10 +25,10 @@ async function getChapterData(slug: string, chapterNumber: number) {
 
     if (!story) return null
 
-    const currentChapter = story.chapters.find((c) => c.chapterNumber === chapterNumber)
+    const currentChapter = story.chapters.find((c: { chapterNumber: number; status: string }) => c.chapterNumber === chapterNumber)
     if (!currentChapter || currentChapter.status !== 'PUBLISHED') return null
 
-    const publishedChapters = story.chapters.filter((c) => c.status === 'PUBLISHED')
+    const publishedChapters = story.chapters.filter((c: { status: string }) => c.status === 'PUBLISHED')
 
     return {
       storyTitle: story.title,
@@ -97,7 +97,7 @@ export default async function ReadPage({ params }: ReadPageProps) {
           className="prose-reading text-[--color-text] font-reading text-lg leading-[1.9] space-y-5"
           style={{ fontFamily: 'var(--font-noto-serif-bengali), serif' }}
         >
-          {data.content.split('\n\n').map((para, i) => (
+          {data.content.split('\n\n').map((para: string, i: number) => (
             <p key={i} className="font-bengali">
               {para}
             </p>

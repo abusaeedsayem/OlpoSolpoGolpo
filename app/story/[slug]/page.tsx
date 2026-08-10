@@ -45,7 +45,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
   if (!story) notFound()
 
-  const publishedChapters = story.chapters.filter((c) => c.status === 'PUBLISHED')
+  const publishedChapters = story.chapters.filter((c: { status: string }) => c.status === 'PUBLISHED')
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -111,7 +111,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
           {/* Tags */}
           {story.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {story.tags.map((tag) => (
+              {story.tags.map((tag: string) => (
                 <Badge key={tag} variant="muted">#{tag}</Badge>
               ))}
             </div>
