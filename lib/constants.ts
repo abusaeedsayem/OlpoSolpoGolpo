@@ -20,13 +20,10 @@ export const CATEGORIES = [
   { name: 'রোমান্স', slug: 'romance', emoji: '💕' },
   { name: 'রহস্য', slug: 'mystery', emoji: '🔍' },
   { name: 'ভৌতিক', slug: 'horror', emoji: '👻' },
-  { name: 'ঐতিহাসিক', slug: 'historical', emoji: '📜' },
   { name: 'সামাজিক', slug: 'social', emoji: '🏘️' },
   { name: 'অ্যাডভেঞ্চার', slug: 'adventure', emoji: '⚔️' },
   { name: 'বিজ্ঞান কল্পকাহিনী', slug: 'sci-fi', emoji: '🚀' },
   { name: 'হাস্যরস', slug: 'comedy', emoji: '😄' },
-  { name: 'শিশু সাহিত্য', slug: 'childrens', emoji: '🌈' },
-  { name: 'কবিতা', slug: 'poetry', emoji: '✍️' },
 ]
 
 export const STORY_STATUSES = {

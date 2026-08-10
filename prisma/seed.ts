@@ -14,13 +14,10 @@ const CATEGORIES = [
   { name: 'রোমান্স', slug: 'romance', emoji: '💕', description: 'প্রেম, আবেগ ও হৃদয়ের স্পর্শময় কাহিনী' },
   { name: 'রহস্য', slug: 'mystery', emoji: '🔍', description: 'রহস্য, গোয়েন্দা ও রোমাঞ্চকর অন্বেষণ' },
   { name: 'ভৌতিক', slug: 'horror', emoji: '👻', description: 'অদৃশ্য রূপকথা, আতঙ্ক ও আলৌকিক উপাখ্যান' },
-  { name: 'ঐতিহাসিক', slug: 'historical', emoji: '📜', description: 'ইতিহাস, ঐতিহ্য ও স্বাধীনতা সংগ্রামের স্মৃতি' },
   { name: 'সামাজিক', slug: 'social', emoji: '🏘️', description: 'সমাজ, পরিবার ও জীবনের বাস্তব প্রতিচ্ছবি' },
   { name: 'অ্যাডভেঞ্চার', slug: 'adventure', emoji: '⚔️', description: 'অভিযান, সংগ্রাম ও অসমসাহসী যাত্রা' },
   { name: 'বিজ্ঞান কল্পকাহিনী', slug: 'sci-fi', emoji: '🚀', description: 'মহাকাশ, ভবিষ্যৎ ও প্রযুক্তির অদেখা জগৎ' },
   { name: 'হাস্যরস', slug: 'comedy', emoji: '😄', description: 'হাসি, আনন্দ ও জীবনের মজার মুহূর্ত' },
-  { name: 'শিশু সাহিত্য', slug: 'childrens', emoji: '🌈', description: 'ছোটদের আনন্দদায়ক ও শিক্ষণীয় গল্প' },
-  { name: 'কবিতা', slug: 'poetry', emoji: '✍️', description: 'ছন্দময় ভাবনা ও অনুভূতির প্রকাশ' },
 ]
 
 async function main() {
