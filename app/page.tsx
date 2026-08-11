@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { StoryCard } from '@/components/story/StoryCard'
 import { CATEGORIES, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants'
 import { prisma } from '@/lib/prisma'
@@ -27,106 +26,71 @@ export default async function HomePage() {
     stories = []
   }
 
-  const displayStories =
-    stories.length > 0
-      ? stories.map((s) => ({
-          id: s.id,
-          title: s.title,
-          slug: s.slug,
-          description: s.description,
-          coverUrl: s.coverUrl,
-          authorName: s.author.name,
-          authorUsername: s.author.username,
-          categoryName: s.category.name,
-          readCount: s.readCount,
-          chapterCount: s._count.chapters,
-          tags: s.tags,
-        }))
-      : [
-          {
-            id: '1',
-            title: 'নীল জলের গান',
-            slug: 'nil-joler-gaan',
-            description: 'একটি ছোট মেয়ে এবং তার হারানো স্বপ্নের গল্প। সমুদ্রের নীল জলে খুঁজে পায় সে তার হারানো শৈশব।',
-            coverUrl: null,
-            authorName: 'সুমাইয়া হক',
-            authorUsername: 'sumaiya',
-            categoryName: 'সামাজিক',
-            readCount: 12340,
-            chapterCount: 8,
-            tags: ['শৈশব', 'স্বপ্ন'],
-          },
-          {
-            id: '2',
-            title: 'রাতের শহরে',
-            slug: 'rater-shohore',
-            description: 'ঢাকার রাতের অন্ধকারে একজন গোয়েন্দার রহস্যময় যাত্রা।',
-            coverUrl: null,
-            authorName: 'রাফি আহমেদ',
-            authorUsername: 'rafi',
-            categoryName: 'রহস্য',
-            readCount: 8900,
-            chapterCount: 12,
-            tags: ['রহস্য', 'ঢাকা'],
-          },
-        ]
+  const displayStories = stories.map((s) => ({
+    id: s.id,
+    title: s.title,
+    slug: s.slug,
+    description: s.description,
+    coverUrl: s.coverUrl,
+    authorName: s.author.name,
+    authorUsername: s.author.username,
+    categoryName: s.category.name,
+    readCount: s.readCount,
+    chapterCount: s._count.chapters,
+    tags: s.tags,
+  }))
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50 via-amber-50/50 to-stone-50 dark:from-stone-950 dark:via-teal-950/20 dark:to-stone-900 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="text-center flex flex-col items-center">
-            {/* Brand Logo Banner */}
-            <div className="relative h-24 w-52 sm:h-32 sm:w-64 mb-4 transform hover:scale-105 transition-transform">
-              <Image
-                src="/logo.png"
-                alt={SITE_NAME}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
+      {/* Hero Section — Compact with background image */}
+      <section
+        className="relative overflow-hidden py-10 sm:py-14"
+        style={{
+          backgroundImage: 'url(/hero-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
 
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-teal-100 dark:bg-teal-900/40 px-4 py-1.5 text-xs sm:text-sm font-bold text-teal-800 dark:text-teal-300 font-bengali border border-teal-200 dark:border-teal-800">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="text-center flex flex-col items-center">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-teal-500/20 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-bold text-teal-200 font-bengali border border-teal-400/30">
               <span>✨</span> বিজ্ঞাপনমুক্ত পরিষ্কার পাঠ অভিজ্ঞতা
             </div>
 
-            <h1 className="font-display text-3xl sm:text-5xl font-bold text-teal-900 dark:text-stone-100 font-bengali leading-tight">
-              অল্প স্বল্প <span className="text-amber-600 dark:text-amber-400">গল্প</span>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white font-bengali leading-tight drop-shadow-lg">
+              অল্প স্বল্প <span className="text-amber-400">গল্প</span>
             </h1>
 
-            <p className="mt-3 text-base sm:text-lg text-stone-600 dark:text-stone-300 max-w-2xl font-bengali leading-relaxed">
+            <p className="mt-2 text-sm sm:text-base text-stone-200 max-w-xl font-bengali leading-relaxed">
               বাংলা ছোটগল্প ও সাহিত্যকর্মের একটি বিজ্ঞাপনমুক্ত, পরিষ্কার ও সুন্দর পাঠ মঞ্চ।
-              পড়ুন, নতুন গল্প লিখুন এবং ছড়িয়ে দিন ভালোবাসার অনুভূতি।
+              পড়ুন, নতুন গল্প লিখুন এবং ছড়িয়ে দিন ভালোবাসার অনুভূতি।
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link
                 href="/explore"
-                className="rounded-xl bg-teal-800 px-7 py-3 text-base font-bold text-white hover:bg-teal-900 transition-colors font-bengali shadow-lg shadow-teal-900/20"
+                className="rounded-xl bg-teal-700 hover:bg-teal-800 px-6 py-2.5 text-sm sm:text-base font-bold text-white transition-colors font-bengali shadow-lg shadow-black/30"
               >
                 📖 গল্প পড়ুন (Read Stories)
               </Link>
               <Link
                 href="/dashboard/stories/new"
-                className="rounded-xl border border-teal-300 dark:border-teal-700 bg-white dark:bg-stone-900 px-7 py-3 text-base font-bold text-teal-800 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-stone-800 transition-colors font-bengali shadow-sm"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-2.5 text-sm sm:text-base font-bold text-white hover:bg-white/20 transition-colors font-bengali"
               >
                 ✏️ গল্প লিখুন (Write Studio)
               </Link>
             </div>
           </div>
         </div>
-
-        {/* Decorative background blobs */}
-        <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-teal-200/30 blur-3xl dark:bg-teal-800/10" />
-        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-amber-200/30 blur-3xl dark:bg-amber-800/10" />
       </section>
 
-      {/* Category Pills */}
+      {/* Category Pills — Centered */}
       <section className="border-b border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-950 py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="flex flex-wrap gap-2 justify-center">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
@@ -141,7 +105,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Main Content: Popular Stories Grid */}
+      {/* Main Content: Popular Stories Grid — Only real stories from DB */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -159,11 +123,29 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {displayStories.map((story) => (
-            <StoryCard key={story.id} {...story} />
-          ))}
-        </div>
+        {displayStories.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {displayStories.map((story) => (
+              <StoryCard key={story.id} {...story} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50">
+            <div className="text-5xl mb-4">📖</div>
+            <h3 className="text-lg font-bold text-stone-700 dark:text-stone-300 font-bengali mb-2">
+              এখনও কোনো গল্প প্রকাশিত হয়নি
+            </h3>
+            <p className="text-sm text-stone-500 dark:text-stone-400 font-bengali mb-6 max-w-md mx-auto">
+              প্রথম লেখক হোন! আপনার গল্প লিখুন এবং প্রকাশ করুন। আপনার গল্পই হবে এই মঞ্চের প্রথম গল্প।
+            </p>
+            <Link
+              href="/dashboard/stories/new"
+              className="inline-flex items-center gap-2 rounded-xl bg-teal-700 hover:bg-teal-800 px-6 py-2.5 text-sm font-bold text-white transition-colors font-bengali"
+            >
+              ✏️ প্রথম গল্প লিখুন
+            </Link>
+          </div>
+        )}
       </section>
     </div>
   )
