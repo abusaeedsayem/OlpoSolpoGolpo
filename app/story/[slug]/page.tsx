@@ -17,7 +17,7 @@ async function getStory(slug: string) {
     const story = await prisma.story.findUnique({
       where: { slug },
       include: {
-        author: { select: { name: true, username: true, avatarUrl: true } },
+        author: { select: { id: true, name: true, username: true, avatarUrl: true, bio: true } },
         category: { select: { name: true, slug: true } },
         chapters: {
           orderBy: { chapterNumber: 'asc' },
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
   const { slug } = await params
   const story = await getStory(slug)
   if (!story) return { title: 'গল্প পাওয়া যায়নি' }
-  return { title: story.title, description: story.description }
+  return { title: `${story.title} — অল্প স্বল্প গল্প`, description: story.description }
 }
 
 export default async function StoryPage({ params }: StoryPageProps) {
@@ -55,9 +55,11 @@ export default async function StoryPage({ params }: StoryPageProps) {
     tags: ['শৈশব', 'স্বপ্ন', 'সমুদ্র'],
     createdAt: new Date(),
     author: {
+      id: 'author-1',
       name: 'সুমাইয়া হক',
       username: 'sumaiya',
       avatarUrl: null,
+      bio: 'গল্প লিখতে ভালোবাসি। প্রকৃতির সৌন্দর্য আর মানুষের সম্পর্কের নানা টানাপোড়েন আমার লেখার মূল উৎস।',
     },
     category: {
       name: 'সামাজিক',
@@ -73,81 +75,81 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-16">
-      {/* Top Banner Background */}
+      {/* Accent Top Header Banner */}
       <div className="h-48 sm:h-56 w-full bg-gradient-to-r from-amber-900 via-orange-950 to-stone-900 relative opacity-90">
         <div className="absolute inset-0 bg-black/30" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 relative -mt-32 sm:-mt-40">
-        {/* Story Header Card (Pratilipi Style input_file_3.png) */}
+        {/* Story Landing Presentation Structure Card */}
         <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-800 p-6 sm:p-8">
           <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
-            {/* Story Cover */}
-            <div className="aspect-[3/4] w-44 sm:w-52 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-amber-500 via-orange-600 to-red-600 shadow-2xl p-4 flex flex-col justify-between ring-4 ring-white dark:ring-stone-800">
+            {/* Left Asset Column: Story Cover Frame */}
+            <div className="aspect-[3/4] w-48 sm:w-56 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-amber-500 via-orange-600 to-red-600 shadow-2xl p-5 flex flex-col justify-between ring-4 ring-white dark:ring-stone-800">
               <span className="text-white text-xs font-bold font-bengali bg-black/30 backdrop-blur px-2.5 py-1 rounded-full self-start">
                 {displayStory.category.name}
               </span>
-              <h2 className="text-white font-bold font-bengali text-lg leading-tight drop-shadow-md">
-                {displayStory.title}
-              </h2>
+              <div>
+                <span className="text-[10px] text-white/80 font-bengali block mb-1">অল্প স্বল্প গল্প</span>
+                <h2 className="text-white font-bold font-bengali text-xl leading-tight drop-shadow-md">
+                  {displayStory.title}
+                </h2>
+              </div>
             </div>
 
-            {/* Story Information */}
+            {/* Right Detail Column */}
             <div className="flex-1 space-y-4 text-center md:text-left">
               <div>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
                   <Badge variant="info">{displayStory.category.name}</Badge>
                   {displayStory.isMature && <Badge variant="warning">১৮+</Badge>}
-                  <Badge variant="success">ধারাটি সম্পন্ন</Badge>
+                  <Badge variant="success">ধারাটি সম্পূর্ণ</Badge>
                 </div>
                 <h1 className="text-2xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100 font-bengali">
                   {displayStory.title}
                 </h1>
               </div>
 
-              {/* Rating & Stats Row (Pratilipi Style) */}
+              {/* Total Reader Metrics & Ratings */}
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-stone-600 dark:text-stone-300 font-bengali border-y border-stone-100 dark:border-stone-800 py-3">
                 <div className="flex items-center gap-1 font-bold text-amber-500">
                   <span>★</span>
                   <span>4.8</span>
-                  <span className="text-stone-400 font-normal text-xs">(৩০ রেটিং)</span>
+                  <span className="text-stone-400 font-normal text-xs">(২৮ রেটিং)</span>
                 </div>
                 <span>·</span>
                 <div>
                   <span className="font-bold text-stone-900 dark:text-stone-100">
                     {formatReadCount(displayStory.readCount)}
                   </span>{' '}
-                  পড়া
+                  পাঠক পড়েছেন
                 </div>
                 <span>·</span>
                 <div>
                   <span className="font-bold text-stone-900 dark:text-stone-100">
                     {publishedChapters.length}
                   </span>{' '}
-                  অধ্যায়
+                  টি অধ্যায়
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+              {/* High-Visibility Primary Action: 'Read Now' (এখন পড়ুন) Button */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2 font-bengali">
                 {publishedChapters.length > 0 && (
                   <Link href={`/read/${displayStory.slug}/1`}>
-                    <Button variant="primary" size="lg" className="bg-amber-600 hover:bg-amber-700 text-white shadow-lg px-8 font-bengali">
-                      📖 পড়া শুরু করুন
+                    <Button variant="primary" size="lg" className="bg-amber-600 hover:bg-amber-700 text-white shadow-xl px-10 font-bold text-base">
+                      📖 এখন পড়ুন (Read Now) →
                     </Button>
                   </Link>
                 )}
-                <Button variant="secondary" size="lg" className="font-bengali">
+                <Button variant="secondary" size="lg" className="font-bold">
                   🔖 লাইব্রেরীতে রাখুন
-                </Button>
-                <Button variant="ghost" size="lg" className="font-bengali">
-                  🔗 শেয়ার
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Author Row (Pratilipi Style input_file_3.png) */}
+          {/* Author Bio Profile Card with Functional Follow Button Switch */}
           <div className="mt-8 pt-6 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-4">
             <Link
               href={`/profile/${displayStory.author.username}`}
@@ -158,16 +160,20 @@ export default async function StoryPage({ params }: StoryPageProps) {
                 <h4 className="font-bold text-stone-900 dark:text-stone-100 font-bengali group-hover:text-amber-600 transition-colors">
                   {displayStory.author.name}
                 </h4>
-                <p className="text-xs text-stone-400 font-bengali">১৩৫ জন অনুসরণকারী</p>
+                <p className="text-xs text-stone-400 font-bengali">
+                  @{displayStory.author.username} · ১২৬ জন অনুসারী
+                </p>
               </div>
             </Link>
 
-            <Button variant="secondary" size="sm" className="font-bengali text-amber-600 border-amber-300 dark:border-amber-800 hover:bg-amber-50">
-              + অনুসরণ করুন
-            </Button>
+            <Link href={`/profile/${displayStory.author.username}`}>
+              <Button variant="secondary" size="sm" className="font-bengali text-amber-600 border-amber-300 dark:border-amber-800 hover:bg-amber-50">
+                + অনুসরণ করুন (Follow)
+              </Button>
+            </Link>
           </div>
 
-          {/* Synopsis */}
+          {/* Story Synopsis */}
           <div className="mt-6">
             <h3 className="font-bold text-stone-900 dark:text-stone-100 font-bengali text-base mb-2">
               গল্প সংক্ষেপ
@@ -178,24 +184,17 @@ export default async function StoryPage({ params }: StoryPageProps) {
           </div>
 
           {/* Tags */}
-          {displayStory.tags.length > 0 && (
+          {displayStory.tags && displayStory.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {displayStory.tags.map((tag: string) => (
-                <Badge key={tag} variant="muted">#{tag}</Badge>
+                <Badge key={tag} variant="muted" className="font-bengali">#{tag}</Badge>
               ))}
             </div>
           )}
         </div>
 
-        {/* Chapters Section Grid (Pratilipi Style input_file_3.png) */}
+        {/* Chapter Index Table Grid showcasing individual titles & access triggers */}
         <div className="mt-8 bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 p-6 sm:p-8">
-          <div className="flex justify-between items-center mb-6 border-b border-stone-100 dark:border-stone-800 pb-4">
-            <h3 className="font-bold text-xl text-stone-900 dark:text-stone-100 font-bengali">
-              সূচিপত্র ও অধ্যায়সমূহ ({publishedChapters.length})
-            </h3>
-            <span className="text-xs text-stone-400 font-bengali">সব অধ্যায় উন্মুক্ত</span>
-          </div>
-
           <ChapterList storySlug={displayStory.slug} chapters={displayStory.chapters} />
         </div>
       </div>

@@ -25,6 +25,11 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Follow & Share Modal State
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
+
   // File Input Refs for Device Uploads
   const avatarFileRef = useRef<HTMLInputElement | null>(null)
   const coverFileRef = useRef<HTMLInputElement | null>(null)
@@ -77,7 +82,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         body: JSON.stringify({ ...updates, username }),
       })
     } catch {
-      // Ignore network errors in fallback mode
+      // Ignore network errors
     } finally {
       setIsSaving(false)
     }
@@ -152,7 +157,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     bio: bio,
     avatarUrl: avatarUrl,
     readCount: 1240,
-    followersCount: 125,
+    followersCount: isFollowing ? 126 : 125,
     followingCount: 42,
     stories: [
       {
@@ -171,7 +176,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-16">
-      {/* Pratilipi Style Hero Cover Banner */}
+      {/* Accent Header Banner */}
       <div
         className="relative h-48 sm:h-64 w-full bg-cover bg-center transition-all duration-300 overflow-hidden"
         style={{
@@ -182,7 +187,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       >
         <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
 
-        {/* Banner Edit Buttons (Top Right) */}
+        {/* Banner Edit & Share Action Buttons (Top Right) */}
         <div className="absolute top-4 right-4 flex gap-2 z-10">
           <button
             type="button"
@@ -196,12 +201,9 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
           <button
             type="button"
-            onClick={() => {
-              const url = prompt('কভার ছবির URL প্রবেশ করান:')
-              if (url) handleSaveCover(url)
-            }}
+            onClick={() => setIsShareModalOpen(true)}
             className="flex items-center gap-1.5 rounded-full bg-stone-900/80 p-2 text-xs text-white hover:bg-stone-900 backdrop-blur border border-white/20 transition-all shadow-md"
-            title="কভার ছবির URL লিংক দিন"
+            title="মেসেজিং ও শেয়ার অপশন"
           >
             <span>🔗</span>
           </button>
@@ -211,7 +213,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       {/* Profile Info Header */}
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="relative -mt-16 sm:-mt-20 mb-6 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
-          {/* Overlapping Avatar with Edit Camera Button */}
+          {/* Overlapping Avatar Photo Placement */}
           <div className="relative group">
             <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-full ring-4 ring-white dark:ring-stone-950 overflow-hidden shadow-xl bg-amber-600 flex items-center justify-center text-white text-3xl font-bold font-bengali">
               {avatarUrl ? (
@@ -232,23 +234,29 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             </button>
           </div>
 
-          {/* Action Buttons */}
+          {/* Follow-state Action Triggers & Share Buttons */}
           <div className="flex items-center gap-3">
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => setIsCoverModalOpen(true)}
+              onClick={() => setIsShareModalOpen(true)}
               className="font-bengali"
             >
-              ⚙️ প্রোফাইল কাস্টমাইজ
+              📩 বার্তা ও শেয়ার
             </Button>
-            <Button variant="primary" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white font-bengali">
-              + অনুসরণ করুন
+
+            <Button
+              variant={isFollowing ? 'secondary' : 'primary'}
+              size="sm"
+              onClick={() => setIsFollowing(!isFollowing)}
+              className={isFollowing ? 'font-bengali' : 'bg-amber-600 hover:bg-amber-700 text-white font-bengali'}
+            >
+              {isFollowing ? '✓ অনুসরণ করছেন' : '+ অনুসরণ করুন'}
             </Button>
           </div>
         </div>
 
-        {/* User Identity & Stats */}
+        {/* User Identity */}
         <div className="space-y-3 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
             <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 font-bengali">
@@ -261,12 +269,32 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
           <p className="text-xs text-stone-400 font-mono">@{displayUser.username}</p>
 
-          <p className="text-xs text-stone-500 font-bengali">
-            {displayUser.followersCount || 0} জন পঠিত / অনুসরণকারী
-          </p>
+          {/* High-Level Counter Strip (ধারাবাহিক, অনুসারী, অনুসরণ করছেন) */}
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 py-2 border-y border-stone-200 dark:border-stone-800 text-sm font-bengali my-3">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-amber-600 dark:text-amber-400 text-base">
+                {displayUser.stories?.length || 0}
+              </span>
+              <span className="text-stone-600 dark:text-stone-400">ধারাবাহিক (Serials)</span>
+            </div>
+            <span className="text-stone-300 dark:text-stone-700">·</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-amber-600 dark:text-amber-400 text-base">
+                {displayUser.followersCount}
+              </span>
+              <span className="text-stone-600 dark:text-stone-400">অনুসারী (Followers)</span>
+            </div>
+            <span className="text-stone-300 dark:text-stone-700">·</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-amber-600 dark:text-amber-400 text-base">
+                {displayUser.followingCount}
+              </span>
+              <span className="text-stone-600 dark:text-stone-400">অনুসরণ করছেন (Following)</span>
+            </div>
+          </div>
 
-          {/* Writer Intro / Bio Section (Always Editable) */}
-          <div className="pt-2 max-w-2xl bg-white dark:bg-stone-900 p-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm">
+          {/* Writer Intro / Bio Section */}
+          <div className="pt-1 max-w-2xl bg-white dark:bg-stone-900 p-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm">
             <div className="flex items-center justify-between gap-2 text-sm font-bold text-stone-800 dark:text-stone-200 font-bengali pb-2 border-b border-stone-100 dark:border-stone-800">
               <span className="flex items-center gap-1.5">
                 <span>✍️</span> লেখক পরিচিতি (Bio)
@@ -374,7 +402,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </button>
         </div>
 
-        {/* Tab Content Display */}
+        {/* Dynamic Responsive Grid Looping Authored Story Cards */}
         <div className="mt-8">
           {activeTab === 'published' && (
             <div>
@@ -424,6 +452,77 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           )}
         </div>
       </div>
+
+      {/* Internal Messaging Share Tray Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-bengali">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl max-w-md w-full p-6 border border-stone-200 dark:border-stone-800 shadow-2xl space-y-4">
+            <div className="flex justify-between items-center border-b border-stone-100 dark:border-stone-800 pb-3">
+              <h3 className="font-bold text-lg text-stone-900 dark:text-stone-100">
+                📩 বার্তা পাঠান ও প্রোফাইল শেয়ার করুন
+              </h3>
+              <button
+                onClick={() => setIsShareModalOpen(false)}
+                className="text-stone-400 hover:text-stone-600 text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-stone-700 dark:text-stone-300">
+                প্রোফাইল লিংক কপি করুন:
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={typeof window !== 'undefined' ? window.location.href : `https://olposolpogolpo.vercel.app/profile/${username}`}
+                  className="flex-1 rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-700 font-mono"
+                />
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    if (navigator.clipboard) {
+                      navigator.clipboard.writeText(window.location.href)
+                      setShareCopied(true)
+                      setTimeout(() => setShareCopied(false), 2000)
+                    }
+                  }}
+                  className="bg-amber-600 hover:bg-amber-700 text-white font-bold"
+                >
+                  {shareCopied ? '✓ কপিড!' : 'কপি করুন'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-stone-100 dark:border-stone-800 text-center">
+              <p className="text-xs text-stone-400 mb-3">অথবা সোশ্যাল মিডিয়ায় শেয়ার করুন:</p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => alert('ফেসবুকে শেয়ার করা হয়েছে')}
+                  className="h-10 w-10 rounded-full bg-[#3b5998] text-white flex items-center justify-center font-bold"
+                >
+                  f
+                </button>
+                <button
+                  onClick={() => alert('হোয়াটসঅ্যাপে শেয়ার করা হয়েছে')}
+                  className="h-10 w-10 rounded-full bg-[#25D366] text-white flex items-center justify-center font-bold"
+                >
+                  💬
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button variant="ghost" onClick={() => setIsShareModalOpen(false)}>
+                বন্ধ করুন
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cover Picture Customization Modal */}
       {isCoverModalOpen && (

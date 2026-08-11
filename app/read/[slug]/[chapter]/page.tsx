@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ReadingProgress } from '@/components/story/ReadingProgress'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { ReaderFooterHub } from '@/components/story/ReaderFooterHub'
 import { SITE_NAME } from '@/lib/constants'
 import { prisma } from '@/lib/prisma'
 
@@ -31,6 +32,7 @@ async function getChapterData(slug: string, chapterNumber: number) {
     const publishedChapters = story.chapters.filter((c: { status: string }) => c.status === 'PUBLISHED')
 
     return {
+      storyId: story.id,
       storyTitle: story.title,
       storySlug: story.slug,
       chapterNumber: currentChapter.chapterNumber,
@@ -94,7 +96,7 @@ export default async function ReadPage({ params }: ReadPageProps) {
 
         {/* Prose content */}
         <div
-          className="prose-reading text-[--color-text] font-reading text-lg leading-[1.9] space-y-5"
+          className="prose-reading text-[--color-text] font-reading text-lg leading-[1.9] space-y-5 text-justify"
           style={{ fontFamily: 'var(--font-noto-serif-bengali), serif' }}
         >
           {data.content.split('\n\n').map((para: string, i: number) => (
@@ -104,35 +106,13 @@ export default async function ReadPage({ params }: ReadPageProps) {
           ))}
         </div>
 
-        {/* Chapter navigation */}
-        <nav className="mt-16 flex items-center justify-between border-t border-stone-100 dark:border-stone-800 pt-8">
-          {chapterNum > 1 ? (
-            <Link
-              href={`/read/${slug}/${chapterNum - 1}`}
-              className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors font-bengali"
-            >
-              ← আগের অধ্যায়
-            </Link>
-          ) : (
-            <div />
-          )}
-          <Link
-            href={`/story/${slug}`}
-            className="text-sm text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 font-bengali"
-          >
-            সূচিপত্র
-          </Link>
-          {chapterNum < data.totalChapters ? (
-            <Link
-              href={`/read/${slug}/${chapterNum + 1}`}
-              className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors font-bengali"
-            >
-              পরের অধ্যায় →
-            </Link>
-          ) : (
-            <div className="text-sm text-stone-400 font-bengali">শেষ অধ্যায়</div>
-          )}
-        </nav>
+        {/* Footer Interaction Hub (5-Star rating, Operational review input, Next chapter CTA) */}
+        <ReaderFooterHub
+          storyId={data.storyId}
+          storySlug={data.storySlug}
+          chapterNum={data.chapterNumber}
+          totalChapters={data.totalChapters}
+        />
       </article>
 
       <div className="py-8 text-center text-xs text-stone-300 dark:text-stone-700 font-bengali">
