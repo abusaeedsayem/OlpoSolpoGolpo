@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -51,21 +52,29 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-stone-100 dark:from-stone-950 dark:to-stone-900 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 py-8 font-bengali">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-3xl">📖</span>
-            <span className="font-display text-xl font-bold text-stone-900 dark:text-stone-100 font-bengali">
+        <div className="text-center mb-6">
+          <Link href="/" className="inline-flex flex-col items-center">
+            <div className="relative h-20 w-44 mb-1">
+              <Image
+                src="/logo.png"
+                alt={SITE_NAME}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <span className="font-display text-xl font-bold text-teal-800 dark:text-teal-400">
               {SITE_NAME}
             </span>
           </Link>
-          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 font-bengali">
-            নতুন অ্যাকাউন্ট তৈরি করুন
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400 font-bengali">
+            বিনামূল্যে নতুন অ্যাকাউন্ট তৈরি করুন
           </p>
         </div>
 
-        <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xl shadow-stone-200/50 dark:shadow-none border border-stone-100 dark:border-stone-800 p-6">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-800 p-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* Role selector */}
             <div className="grid grid-cols-2 gap-2">
@@ -74,9 +83,9 @@ export default function RegisterPage() {
                   key={role}
                   type="button"
                   onClick={() => setForm({ ...form, role })}
-                  className={`rounded-lg border py-2.5 text-sm font-medium font-bengali transition-all ${
+                  className={`rounded-xl border py-2.5 text-sm font-medium font-bengali transition-all ${
                     form.role === role
-                      ? 'border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+                      ? 'border-teal-600 bg-teal-50 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 font-bold'
                       : 'border-stone-200 text-stone-500 hover:border-stone-300 dark:border-stone-700'
                   }`}
                 >
@@ -98,14 +107,14 @@ export default function RegisterPage() {
               <p className="text-sm text-red-500 text-center font-bengali">{errors.general}</p>
             )}
 
-            <Button type="submit" isLoading={isLoading} size="lg" className="mt-2">
-              অ্যাকাউন্ট তৈরি করুন
+            <Button type="submit" isLoading={isLoading} size="lg" className="mt-2 bg-teal-800 hover:bg-teal-900 text-white font-bold">
+              অ্যাকাউন্ট তৈরি করুন (Register)
             </Button>
           </form>
 
           <p className="mt-4 text-center text-sm text-stone-500 dark:text-stone-400 font-bengali">
             আগে থেকে অ্যাকাউন্ট আছে?{' '}
-            <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">
+            <Link href="/login" className="text-teal-700 hover:underline dark:text-teal-400 font-bold">
               প্রবেশ করুন
             </Link>
           </p>

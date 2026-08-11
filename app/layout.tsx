@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'bn_BD',
@@ -35,11 +40,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: [{ url: '/logo.png', width: 1024, height: 682, alt: 'অল্প স্বল্প গল্প - OlpoSolpoGolpo' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: ['/logo.png'],
   },
   robots: {
     index: true,
@@ -56,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/logo.png" type="image/png" />
       </head>
       <body className="min-h-screen bg-[--color-bg] text-[--color-text] antialiased">
         <AuthProvider>

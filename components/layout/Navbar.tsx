@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
@@ -20,7 +21,7 @@ export function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const user = session?.user as any
 
   // Autocomplete Live Search
@@ -78,13 +79,19 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-white/95 backdrop-blur-md dark:border-stone-800 dark:bg-stone-950/95 shadow-sm">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 gap-2 sm:gap-4">
-        {/* Brand Title */}
+        {/* Brand Logo & Title */}
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-600 text-white font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
-              📖
-            </span>
-            <span className="font-display text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-600 transition-colors font-bengali">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="relative h-10 w-12 sm:w-14 flex-shrink-0 transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.png"
+                alt={SITE_NAME}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <span className="font-display text-lg sm:text-xl font-bold text-teal-800 dark:text-teal-400 group-hover:text-amber-600 transition-colors font-bengali tracking-tight">
               {SITE_NAME}
             </span>
           </Link>
@@ -99,7 +106,7 @@ export function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim() && setShowDropdown(true)}
               placeholder="নিজের মনের মতো গল্প খুঁজুন..."
-              className="w-full rounded-full border border-stone-200 bg-stone-100/80 px-4 py-2 pl-10 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-100 dark:focus:bg-stone-950 font-bengali transition-all"
+              className="w-full rounded-full border border-stone-200 bg-stone-100/80 px-4 py-2 pl-10 text-sm text-stone-900 placeholder:text-stone-400 focus:border-teal-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-100 dark:focus:bg-stone-950 font-bengali transition-all"
             />
             <span className="absolute left-3.5 top-2.5 text-stone-400 text-sm">🔍</span>
           </form>
@@ -116,7 +123,7 @@ export function Navbar() {
                       key={story.id}
                       href={`/story/${story.slug}`}
                       onClick={() => setShowDropdown(false)}
-                      className="flex items-center gap-3 p-3 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                      className="flex items-center gap-3 p-3 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
                     >
                       <span className="text-xl">📖</span>
                       <div className="flex-1 min-w-0">
@@ -137,57 +144,52 @@ export function Navbar() {
           )}
         </div>
 
-        {/* 5 Structural Icon Tabs (Home, Categories, Write Studio, Profile, Login/Logout) */}
+        {/* 5 Structural Icon Tabs */}
         <div className="hidden lg:flex items-center gap-6">
-          {/* 1. Home (হোম) */}
           <Link
             href="/"
             className={cn(
-              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-amber-600',
-              pathname === '/' ? 'text-amber-600 font-bold' : 'text-stone-600 dark:text-stone-400'
+              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-teal-700 dark:hover:text-teal-400',
+              pathname === '/' ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-600 dark:text-stone-400'
             )}
           >
             <span className="text-lg">🏠</span>
             <span>হোম</span>
           </Link>
 
-          {/* 2. Categories (বিভাগ) */}
           <Link
             href="/categories"
             className={cn(
-              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-amber-600',
-              pathname === '/categories' || pathname === '/genres' ? 'text-amber-600 font-bold' : 'text-stone-600 dark:text-stone-400'
+              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-teal-700 dark:hover:text-teal-400',
+              pathname === '/categories' || pathname === '/genres' ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-600 dark:text-stone-400'
             )}
           >
             <span className="text-lg">🧭</span>
             <span>বিভাগ</span>
           </Link>
 
-          {/* 3. Write Studio (লিখুন) */}
           <Link
             href="/dashboard/stories/new"
             className={cn(
-              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-amber-600',
-              pathname.includes('/stories/new') || pathname === '/write' ? 'text-amber-600 font-bold' : 'text-stone-600 dark:text-stone-400'
+              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-teal-700 dark:hover:text-teal-400',
+              pathname.includes('/stories/new') || pathname === '/write' ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-600 dark:text-stone-400'
             )}
           >
             <span className="text-lg">✏️</span>
             <span>লিখুন</span>
           </Link>
 
-          {/* 4. Profile (প্রোফাইল) */}
           <Link
             href={profileHref}
             className={cn(
-              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-amber-600',
-              pathname.startsWith('/profile') ? 'text-amber-600 font-bold' : 'text-stone-600 dark:text-stone-400'
+              'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-teal-700 dark:hover:text-teal-400',
+              pathname.startsWith('/profile') ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-600 dark:text-stone-400'
             )}
           >
             <span className="text-lg">👤</span>
             <span>প্রোফাইল</span>
           </Link>
 
-          {/* 5. Login/Logout (লগইন) */}
           {user ? (
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
@@ -200,8 +202,8 @@ export function Navbar() {
             <Link
               href="/login"
               className={cn(
-                'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-amber-600',
-                pathname === '/login' ? 'text-amber-600 font-bold' : 'text-stone-600 dark:text-stone-400'
+                'flex flex-col items-center text-xs font-bengali font-medium transition-colors hover:text-teal-700 dark:hover:text-teal-400',
+                pathname === '/login' ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-600 dark:text-stone-400'
               )}
             >
               <span className="text-lg">🔑</span>
@@ -210,11 +212,10 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Right Controls (Theme Toggle & Mobile Menu) */}
+        {/* Right Controls */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <ThemeToggle />
 
-          {/* Mobile menu trigger */}
           <button
             className="lg:hidden rounded-lg p-2 text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -238,7 +239,6 @@ export function Navbar() {
             />
           </form>
 
-          {/* 5 Mobile Structural Tabs */}
           <div className="grid grid-cols-5 gap-1 py-2 border-b border-stone-100 dark:border-stone-800 text-center">
             <Link
               href="/"
