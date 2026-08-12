@@ -23,7 +23,11 @@ export async function POST(request: Request) {
       )
     }
 
-    const { name, username, email, password, role } = parsed.data
+    const name = parsed.data.name.trim()
+    const username = parsed.data.username.toLowerCase().trim()
+    const email = parsed.data.email.toLowerCase().trim()
+    const password = parsed.data.password
+    const role = parsed.data.role
 
     // Check existing
     const existing = await prisma.user.findFirst({

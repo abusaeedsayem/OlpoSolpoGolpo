@@ -25,7 +25,7 @@ function LoginForm() {
 
     try {
       const res = await signIn('credentials', {
-        email: form.email,
+        email: form.email.trim(),
         password: form.password,
         callbackUrl,
         redirect: false,
@@ -38,7 +38,7 @@ function LoginForm() {
         window.location.href = res?.url || callbackUrl
       }
     } catch {
-      setError('একটি সমস্যা দেখা দিয়েছে। আবার চেষ্টা করুন।')
+      setError('ইমেইল বা পাসওয়ার্ড সঠিক নয়।')
       setIsLoading(false)
     }
   }
