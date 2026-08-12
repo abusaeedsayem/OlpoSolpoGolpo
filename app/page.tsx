@@ -5,6 +5,9 @@ import { StoryCard } from '@/components/story/StoryCard'
 import { CATEGORIES, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
@@ -46,9 +49,9 @@ export default async function HomePage() {
     <div className="min-h-screen">
 
       {/* ── HERO SECTION — Compact with Bengali-themed background ── */}
-      <section className="relative overflow-hidden" style={{ minHeight: '220px' }}>
+      <section className="relative overflow-hidden" style={{ minHeight: '200px' }}>
 
-        {/* Background image using Next.js Image (works in production) */}
+        {/* Background image using Next.js Image */}
         <Image
           src="/hero-bg.jpg"
           alt="Bengali literature background"
@@ -65,14 +68,8 @@ export default async function HomePage() {
         />
 
         {/* Content */}
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
           <div className="flex flex-col items-center text-center">
-
-            {/* Ad-free badge */}
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs sm:text-sm font-bold text-teal-200 font-bengali border border-teal-400/40"
-              style={{ background: 'rgba(20,184,166,0.18)', backdropFilter: 'blur(8px)' }}>
-              <span>✨</span> বিজ্ঞাপনমুক্ত পরিষ্কার পাঠ অভিজ্ঞতা
-            </div>
 
             {/* Title */}
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-white font-bengali leading-tight drop-shadow-lg">
