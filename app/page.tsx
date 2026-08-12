@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { StoryCard } from '@/components/story/StoryCard'
 import { CATEGORIES, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants'
 import { prisma } from '@/lib/prisma'
@@ -26,6 +27,7 @@ export default async function HomePage() {
     stories = []
   }
 
+  // Only show real stories from DB — no placeholders ever
   const displayStories = stories.map((s) => ({
     id: s.id,
     title: s.title,
@@ -34,7 +36,7 @@ export default async function HomePage() {
     coverUrl: s.coverUrl,
     authorName: s.author.name,
     authorUsername: s.author.username,
-    categoryName: s.category.name,
+    categoryName: s.category?.name ?? '',
     readCount: s.readCount,
     chapterCount: s._count.chapters,
     tags: s.tags,
@@ -42,60 +44,77 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section — Compact with background image */}
-      <section
-        className="relative overflow-hidden py-10 sm:py-14"
-        style={{
-          backgroundImage: 'url(/hero-bg.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
-          <div className="text-center flex flex-col items-center">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-teal-500/20 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-bold text-teal-200 font-bengali border border-teal-400/30">
+      {/* ── HERO SECTION — Compact with Bengali-themed background ── */}
+      <section className="relative overflow-hidden" style={{ minHeight: '220px' }}>
+
+        {/* Background image using Next.js Image (works in production) */}
+        <Image
+          src="/hero-bg.jpg"
+          alt="Bengali literature background"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+
+        {/* Dark gradient overlay so text is readable */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.82) 100%)' }}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
+          <div className="flex flex-col items-center text-center">
+
+            {/* Ad-free badge */}
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs sm:text-sm font-bold text-teal-200 font-bengali border border-teal-400/40"
+              style={{ background: 'rgba(20,184,166,0.18)', backdropFilter: 'blur(8px)' }}>
               <span>✨</span> বিজ্ঞাপনমুক্ত পরিষ্কার পাঠ অভিজ্ঞতা
             </div>
 
+            {/* Title */}
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-white font-bengali leading-tight drop-shadow-lg">
               অল্প স্বল্প <span className="text-amber-400">গল্প</span>
             </h1>
 
-            <p className="mt-2 text-sm sm:text-base text-stone-200 max-w-xl font-bengali leading-relaxed">
+            {/* Subtitle */}
+            <p className="mt-2 text-sm sm:text-base text-stone-200 max-w-xl font-bengali leading-relaxed drop-shadow">
               বাংলা ছোটগল্প ও সাহিত্যকর্মের একটি বিজ্ঞাপনমুক্ত, পরিষ্কার ও সুন্দর পাঠ মঞ্চ।
               পড়ুন, নতুন গল্প লিখুন এবং ছড়িয়ে দিন ভালোবাসার অনুভূতি।
             </p>
 
+            {/* CTA Buttons */}
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link
                 href="/explore"
-                className="rounded-xl bg-teal-700 hover:bg-teal-800 px-6 py-2.5 text-sm sm:text-base font-bold text-white transition-colors font-bengali shadow-lg shadow-black/30"
+                className="rounded-xl bg-teal-700 hover:bg-teal-800 px-6 py-2.5 text-sm sm:text-base font-bold text-white transition-colors font-bengali shadow-lg"
               >
                 📖 গল্প পড়ুন (Read Stories)
               </Link>
               <Link
                 href="/dashboard/stories/new"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-2.5 text-sm sm:text-base font-bold text-white hover:bg-white/20 transition-colors font-bengali"
+                className="rounded-xl border border-white/40 px-6 py-2.5 text-sm sm:text-base font-bold text-white hover:bg-white/15 transition-colors font-bengali"
+                style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(6px)' }}
               >
                 ✏️ গল্প লিখুন (Write Studio)
               </Link>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* Category Pills — Centered */}
-      <section className="border-b border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-950 py-4">
+      {/* ── CATEGORY PILLS — Centered on all devices ── */}
+      <section className="border-b border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950 py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-2 items-center justify-center">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-1.5 text-sm font-medium text-stone-700 hover:border-teal-400 hover:text-teal-800 hover:bg-teal-50 transition-colors dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:hover:text-teal-300 font-bengali"
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-1.5 text-sm font-medium text-stone-700 hover:border-teal-400 hover:text-teal-800 hover:bg-teal-50 transition-colors dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:hover:text-teal-300 font-bengali whitespace-nowrap"
               >
                 <span>{cat.emoji}</span>
                 <span>{cat.name}</span>
@@ -105,7 +124,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Main Content: Popular Stories Grid — Only real stories from DB */}
+      {/* ── POPULAR STORIES — Real DB data only, no placeholders ── */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -114,7 +133,6 @@ export default async function HomePage() {
             </h2>
             <p className="text-sm text-stone-500 font-bengali">পাঠকদের সবচেয়ে পছন্দের সাম্প্রতিক ছোটগল্প</p>
           </div>
-
           <Link
             href="/explore"
             className="text-xs sm:text-sm font-bold text-teal-800 dark:text-teal-400 hover:underline font-bengali"
@@ -130,13 +148,13 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50">
+          <div className="text-center py-20 px-4 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50">
             <div className="text-5xl mb-4">📖</div>
             <h3 className="text-lg font-bold text-stone-700 dark:text-stone-300 font-bengali mb-2">
               এখনও কোনো গল্প প্রকাশিত হয়নি
             </h3>
             <p className="text-sm text-stone-500 dark:text-stone-400 font-bengali mb-6 max-w-md mx-auto">
-              প্রথম লেখক হোন! আপনার গল্প লিখুন এবং প্রকাশ করুন। আপনার গল্পই হবে এই মঞ্চের প্রথম গল্প।
+              প্রথম লেখক হোন! আপনার গল্প লিখুন এবং প্রকাশ করুন।
             </p>
             <Link
               href="/dashboard/stories/new"
@@ -147,6 +165,7 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
     </div>
   )
 }
