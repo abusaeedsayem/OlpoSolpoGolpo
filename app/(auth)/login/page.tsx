@@ -123,6 +123,15 @@ function LoginForm() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
             />
+
+            <div className="flex justify-end text-xs">
+              <Link
+                href="/forgot-password"
+                className="font-medium text-teal-700 hover:underline dark:text-teal-400"
+              >
+                পাসওয়ার্ড ভুলে গেছেন? (Forgot Password?)
+              </Link>
+            </div>
             <Button
               type="submit"
               variant="primary"
