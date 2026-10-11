@@ -1,0 +1,93 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/cn';
+
+export function SearchTrigger() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="গল্প খুঁজুন"
+        className={cn(
+          'p-2 rounded-full hover:bg-crimson/5 transition-colors',
+          'text-ink/60 hover:text-crimson'
+        )}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.8}
+            d="M21 21l-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"
+          />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-start justify-center pt-24 px-4"
+          onClick={(e) => e.target === e.currentTarget && setOpen(false)}
+        >
+          <div className="bg-surface w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-ink/10">
+              <svg
+                className="w-5 h-5 text-ink/40 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  d="M21 21l-5.197-5.197M15.803 15.803A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"
+                />
+              </svg>
+              <input
+                autoFocus
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="গল্প, কবিতা, লেখক খুঁজুন..."
+                className={cn(
+                  'flex-1 bg-transparent outline-none text-ink font-ui text-base',
+                  'placeholder:text-ink/40'
+                )}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setOpen(false);
+                  if (e.key === 'Enter' && query.trim()) {
+                    setOpen(false);
+                    router.push(`/?q=${encodeURIComponent(query.trim())}`);
+                  }
+                }}
+              />
+              <button
+                onClick={() => setOpen(false)}
+                className="text-ink/40 hover:text-ink text-sm font-ui px-2"
+              >
+                বাতিল
+              </button>
+            </div>
+            {!query && (
+<div className="px-5 py-4 text-sm text-ink/50 font-ui">
+                  জনপ্রিয় বিভাগ: গল্প · কবিতা · ধারাবাহিক
+                </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

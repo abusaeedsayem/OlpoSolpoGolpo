@@ -1,0 +1,333 @@
+@config "../../tailwind.config.js";
+@import "tailwindcss";
+@source "../";
+
+/*
+ * Tailwind v4 entry.
+ * - `@import "tailwindcss"` pulls in theme + preflight + utilities (the legacy
+ *   `@tailwind base/components/utilities` directives only emit a subset here).
+ * - `@config` loads the v3-style tailwind.config.js (crimson/ink colors,
+ *   font-prose/font-ui, max-w-reader), which v4 ignores by default.
+ * - `@source` is explicit because this folder is not a git checkout, so v4's
+ *   automatic content detection cannot find its root.
+ */
+
+/* ─── Design tokens (matched to thehellotesting.com) ──────────────────────── */
+:root {
+  --brand-red: #d61717;
+  --brand-red-dark: #b01212;
+  --bg-canvas: #ffffff;
+  --text-primary: #333333;
+  --surface: #ffffff;
+  --font-prose: var(--font-noto-serif-bengali), Georgia, serif;
+  --font-ui: var(--font-hind-siliguri), system-ui, sans-serif;
+}
+
+/* Light theme (default) */
+[data-theme="parchment"],
+[data-theme=""] {
+  --bg-canvas: #ffffff;
+  --text-primary: #333333;
+  --surface: #ffffff;
+}
+
+/* Sepia theme */
+[data-theme="sepia"] {
+  --bg-canvas: #ffffff;
+  --text-primary: #2c2416;
+  --surface: #ffffff;
+}
+
+/* Night theme */
+[data-theme="night"] {
+  --bg-canvas: #ffffff;
+  --text-primary: #e8e0d4;
+  --surface: #ffffff;
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(214, 23, 23, 0.18);
+}
+
+/* ─── Masthead ─────────────────────────────────────────────────────────────── */
+.masthead-bar {
+  background: var(--surface);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.nav-bar {
+  background: var(--brand-red);
+}
+
+.nav-link {
+  color: #ffffff;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background-color 0.18s ease;
+}
+
+.nav-link:hover,
+.nav-link[data-active="true"] {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ─── Section structure ────────────────────────────────────────────────────── */
+.band-gray {
+  background: #f1f2f4;
+}
+
+.band-white {
+  background: #ffffff;
+}
+
+[data-theme="night"] .band-gray,
+[data-theme="night"] .band-white {
+  background: var(--bg-canvas);
+}
+
+.section-heading {
+  font-family: var(--font-prose);
+  font-weight: 500;
+  font-size: 1.75rem;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────────── */
+.feature-card {
+  background: var(--surface);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: block;
+  height: 100%;
+}
+
+.feature-card:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.13);
+  transform: translateY(-2px);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--brand-red);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.post-title {
+  font-family: var(--font-prose);
+  font-weight: 500;
+  font-size: 1.55rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.post-title-lg {
+  font-size: 2rem;
+}
+
+.post-author {
+  font-family: var(--font-prose);
+  color: var(--brand-red);
+  font-size: 1.05rem;
+}
+
+.read-more {
+  color: var(--brand-red);
+  letter-spacing: 0.28em;
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* ─── Category tile strip ──────────────────────────────────────────────────── */
+.category-tile {
+  position: relative;
+  display: block;
+  border-radius: 1rem;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  min-width: 13rem;
+  flex: 0 0 auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.category-tile:hover {
+  transform: translateY(-3px);
+}
+
+.category-tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.category-tile:hover img {
+  transform: scale(1.05);
+}
+
+.category-tile span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-prose);
+  font-size: 2rem;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.42));
+  text-align: center;
+  padding: 0.75rem;
+}
+
+/* ─── Books ────────────────────────────────────────────────────────────────── */
+.book-cover {
+  border-radius: 0.35rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  width: 100%;
+}
+
+.book-price {
+  font-family: var(--font-ui);
+  text-align: center;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
+/* ─── Bengali prose typography ─────────────────────────────────────────────── */
+.prose-bengali {
+  font-family: var(--font-prose);
+  line-height: 1.65;
+  word-break: break-word;
+  hyphens: none;
+}
+
+.prose-bengali p {
+  margin-bottom: 1.25em;
+}
+
+/* ─── Article reader ───────────────────────────────────────────────────────── */
+.reader-content {
+  font-family: var(--font-prose);
+  font-size: var(--reader-font-size, 1.0625rem);
+  line-height: 1.85;
+  color: var(--text-primary);
+  text-align: justify;
+}
+
+.reader-content p {
+  margin-bottom: 1.35em;
+}
+
+.reader-content h2,
+.reader-content h3 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.7em;
+}
+
+.reader-content .poem-stanza,
+.reader-content p.poem-stanza {
+  text-align: center;
+  white-space: pre-wrap;
+  line-height: 2.1;
+  margin-bottom: 2em;
+}
+
+.reader-content blockquote {
+  border-left: 3px solid var(--brand-red);
+  padding-left: 1rem;
+  margin: 1.5em 0;
+  color: color-mix(in srgb, var(--text-primary) 75%, transparent);
+}
+
+.reader-toolbar {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Night mode adjustments ───────────────────────────────────────────────── */
+[data-theme="night"] .feature-card,
+[data-theme="night"] .reader-toolbar {
+  border-color: #333;
+}
+
+[data-theme="night"] .chip {
+  box-shadow: none;
+}
+
+/* ─── Misc ─────────────────────────────────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--text-primary);
+  opacity: 0.35;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  z-index: 100;
+}
